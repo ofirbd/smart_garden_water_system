@@ -98,7 +98,7 @@ void Scheduler::publishSchedule() const {
         return;
     }
     String scheduleJson = getScheduleJson();
-    _mqttClient->publish(MQTT_TOPIC_SCHEDULE_STATE, scheduleJson.c_str(), false); // do not Retain the message
+    _mqttClient->publish(MQTT_TOPIC_SCHEDULE_STATE, scheduleJson.c_str(), true); // Retain the message
     Serial.println("Published schedule to MQTT topic: schedule/state");
 }
 

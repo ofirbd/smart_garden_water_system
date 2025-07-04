@@ -102,11 +102,69 @@ A clear and hierarchical topic structure will be used:
 ## 5. Web Application Detailed Design
 
 ### 5.1. Technology Stack
--   **Frontend:** A simple, responsive single-page application (SPA) using **React or Vue.js** for a dynamic user experience.
--   **Backend/BFF:** A lightweight backend (e.g., **Node.js with Express**) will serve the frontend and manage a persistent connection to the MQTT broker via WebSockets to the client. This avoids exposing MQTT credentials to the browser.
+-   **Frontend:** A simple, responsive single-page application (SPA) built with **React**. It provides a dynamic user experience for interacting with the system.
+-   **Backend/BFF (Backend For Frontend):** A lightweight backend implemented with **Node.js and Express.js**. This backend serves the React frontend, manages a persistent connection to the MQTT broker, and acts as a WebSocket server to relay real-time MQTT messages to the frontend. This architecture prevents exposing MQTT credentials directly to the browser.
 
 ### 5.2. UI Components
--   **Dashboard:** Main view showing the status of each valve (open/closed), controller status (online/offline), and current sensor readings.
--   **Manual Control Panel:** A set of buttons to manually open or close each of the three valves.
--   **Schedule Editor:** An intuitive interface to create, edit, and delete watering programs. It will allow users to select days of the week, set start times, and define durations for each valve.
--   **Settings Page:** For configuring MQTT broker details (if not hardcoded) and other system settings.
+-   **Dashboard:** The primary view displaying the real-time status of the system. It shows:
+    -   Controller status (online/offline).
+    -   Current state of each valve (open/closed).
+    -   Manual control buttons to open or close individual valves.
+-   **Schedule Editor:** An intuitive interface for managing watering schedules. Users can:
+    -   View the current schedule loaded from the ESP32.
+    -   Add new watering programs.
+    -   Edit existing programs, including enabling/disabling, selecting days of the week, setting start times, and defining watering durations for specific valves.
+    -   Save updated schedules, which are then sent to the ESP32 for persistence.
+
+## 6. Web Application Operation
+
+To run the web application, both the backend and frontend components must be started.
+
+### 6.1. Directory Structure
+The web application code is located under `02-develop/03-sw/web-app/`:
+-   `02-develop/03-sw/web-app/backend/`: Contains the Node.js Express server.
+-   `02-develop/03-sw/web-app/frontend/`: Contains the React single-page application.
+
+### 6.2. Starting the Backend Server
+1.  Navigate to the backend directory:
+    ```bash
+    cd 02-develop/03-sw/web-app/backend
+    ```
+2.  Install dependencies (if not already done):
+    ```bash
+    npm install
+    ```
+3.  Start the server:
+    ```bash
+    npm start
+    ```
+    The backend server will typically run on `http://localhost:3001`.
+
+### 6.3. Starting the Frontend Application
+1.  Navigate to the frontend directory:
+    ```bash
+    cd 02-develop/03-sw/web-app/frontend
+    ```
+2.  Install dependencies (if not already done):
+    ```bash
+    npm install
+    ```
+3.  Start the development server:
+    ```bash
+    npm start
+    ```
+    The React development server will typically run on `http://localhost:3000` and automatically open in your browser.
+
+### 6.4. Communication Flow
+-   The React frontend communicates with the Node.js backend via HTTP API calls (for sending commands) and WebSockets (for receiving real-time MQTT updates).
+-   The Node.js backend maintains a persistent connection to the MQTT broker.
+-   When the frontend sends a command (e.g., open valve, save schedule), it makes an HTTP POST request to the backend's `/api/command` endpoint. The backend then publishes this command to the appropriate MQTT topic.
+-   The backend subscribes to relevant MQTT topics (e.g., controller status, valve states, schedule state). Any messages received from the MQTT broker are immediately relayed to all connected frontend clients via WebSocket.
+-   Upon a new WebSocket connection from the frontend, the backend immediately sends the last known retained states for controller status and schedule to ensure the frontend displays up-to-date information without delay.
+
+### 6.5. Key Files
+-   `02-develop/03-sw/web-app/backend/server.js`: Main backend server logic.
+-   `02-develop/03-sw/web-app/backend/package.json`: Backend dependencies.
+-   `02-develop/03-sw/web-app/frontend/src/App.js`: Main React application component, handles routing and overall state.
+-   `02-develop/03-sw/web-app/frontend/src/ScheduleEditor.js`: React component for schedule management.
+-   `02-develop/03-sw/web-app/frontend/package.json`: Frontend dependencies and proxy configuration.

@@ -64,7 +64,7 @@ void MqttClient::reconnect() {
     Serial.print("Attempting MQTT connection...");
     if (_client.connect(MQTT_CLIENT_ID, MQTT_TOPIC_CONTROLLER_STATUS, 1, true, "offline")) {
         Serial.println("connected");
-        _client.publish(MQTT_TOPIC_CONTROLLER_STATUS, "online", false);
+        _client.publish(MQTT_TOPIC_CONTROLLER_STATUS, "online", true); // Retain the online status
         subscribe(MQTT_TOPIC_VALVE_COMMAND);
         if (subscribe(MQTT_TOPIC_SCHEDULE_SET, 1)) {
             Serial.println("Subscribed to schedule topic successfully.");
@@ -82,10 +82,9 @@ void MqttClient::reconnect() {
         _client.loop();
         delay(100); // Give a small delay for the message to be processed
 
-        // Request the current schedule from the broker. This allows the device to get the latest schedule
-        // right after connecting, which is useful if the schedule was updated while the device was offline.
-        publish(MQTT_TOPIC_SCHEDULE_GET, "", false); // QoS 0, not retained, empty payload.
-        Serial.println("Published request for schedule on topic 'schedule/get'.");
+        // Publish the current schedule from the device to ensure it's retained on the broker
+        _scheduler->publishSchedule();
+        Serial.println("Published current schedule to broker.");
     } else {
         Serial.print("failed, rc=");
         Serial.print(_client.state());
@@ -137,8 +136,8 @@ void MqttClient::handleCallback(char* topic, byte* payload, unsigned int length)
     if (strcmp(topic, MQTT_TOPIC_SCHEDULE_GET) == 0) {
         Serial.println("Received schedule GET request. Publishing current schedule.");
         String scheduleJson = _scheduler->getScheduleJson();
-        // Publish with retain=false to ensure the latest schedule is available
-        publish(MQTT_TOPIC_SCHEDULE_STATE, scheduleJson.c_str(), false);
+        // Publish with retain=true to ensure the latest schedule is available
+        publish(MQTT_TOPIC_SCHEDULE_STATE, scheduleJson.c_str(), true);
         return; // Message handled
     }
 
