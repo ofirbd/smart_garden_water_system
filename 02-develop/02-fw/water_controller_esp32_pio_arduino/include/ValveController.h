@@ -1,3 +1,10 @@
+/**
+ * @file ValveController.h
+ * @brief Controls the water valves.
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #ifndef VALVE_CONTROLLER_H
 #define VALVE_CONTROLLER_H
 

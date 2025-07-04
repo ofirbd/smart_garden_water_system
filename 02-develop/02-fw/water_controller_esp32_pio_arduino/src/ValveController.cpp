@@ -1,3 +1,18 @@
+/**
+ * @file ValveController.cpp
+ * @brief Implements the ValveController class for controlling water valves.
+ * 
+ * This file contains the implementation of the ValveController class, which provides
+ * a high-level interface for controlling the latching solenoid valves. It abstracts
+ * the low-level H-bridge control logic, allowing other parts of the firmware to
+ * simply call openValve() and closeValve() without needing to know the details
+ * of the hardware implementation. This encapsulation is a key principle of good
+ * object-oriented design and makes the code cleaner and more maintainable.
+ * 
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #include "ValveController.h"
 #include "Config.h"
 

@@ -1,3 +1,10 @@
+/**
+ * @file Scheduler.h
+ * @brief Manages the watering schedule.
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
@@ -24,21 +31,28 @@ struct Program {
     int actionCount;
 };
 
+class MqttClient; // Forward declaration
+
 class Scheduler {
 public:
+    public:
     Scheduler(TimeManager* timeManager, ValveController* valveController);
     void begin();
     void loop();
     bool updateSchedule(const char* jsonPayload);
     String getScheduleJson() const;
+    void setMqttClient(MqttClient* mqttClient);
+    void publishSchedule() const;
+
+    void loadSchedule();
 
 private:
     bool _parseAndLoad(const char* jsonPayload);
     void _saveScheduleToSPIFFS();
-    void loadSchedule();
 
     TimeManager* _timeManager;
     ValveController* _valveController;
+    MqttClient* _mqttClient; // MQTT client for publishing status
 
     Program _programs[5]; // Support up to 5 different programs
     int _programCount;

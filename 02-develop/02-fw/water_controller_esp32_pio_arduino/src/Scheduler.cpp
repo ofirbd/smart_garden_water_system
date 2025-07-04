@@ -1,11 +1,28 @@
+/**
+ * @file Scheduler.cpp
+ * @brief Implements the Scheduler class for managing watering schedules.
+ * 
+ * This file contains the implementation of the Scheduler class, which is responsible
+ * for managing the watering schedule. It loads the schedule from SPIFFS on startup,
+ * saves new schedules received via MQTT, and checks the current time to trigger
+ * watering events. The use of a separate class for scheduling follows the single-
+ * responsibility principle, making the code more modular and easier to maintain.
+ * The schedule is stored in a structured format, and the class provides methods
+ * for updating and retrieving the schedule in JSON format.
+ * 
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #include <SPIFFS.h>
+#include "MqttClient.h"
 #include "Scheduler.h"
 #include "Config.h"
 
 #define SCHEDULE_FILE "/schedule.json"
 
-Scheduler::Scheduler(TimeManager* timeManager, ValveController* valveController) 
-: _timeManager(timeManager), _valveController(valveController), _programCount(0) {
+Scheduler::Scheduler(TimeManager* timeManager, ValveController* valveController)
+: _timeManager(timeManager), _valveController(valveController), _mqttClient(nullptr), _programCount(0) {
     // Initialize active watering states
     for (int i = 0; i < 3; ++i) {
         _activeWatering[i] = {false, 0, 0};
@@ -56,21 +73,33 @@ void Scheduler::loop() {
     }
 }
 
+void Scheduler::setMqttClient(MqttClient* mqttClient) {
+    _mqttClient = mqttClient;
+}
+
 bool Scheduler::updateSchedule(const char* jsonPayload) {
     Serial.print("Scheduler::updateSchedule() received payload: [");
     Serial.print(jsonPayload);
     Serial.println("]");
 
     if (_parseAndLoad(jsonPayload)) {
-        // Only save if the parsed schedule is not empty
-        if (_programCount > 0) {
-            _saveScheduleToSPIFFS();
-        } else {
-            Serial.println("Not saving empty schedule.");
-        }
+        // Save the new schedule to SPIFFS
+        _saveScheduleToSPIFFS();
+        // Publish the new state to MQTT
+        publishSchedule();
         return true;
     }
     return false;
+}
+
+void Scheduler::publishSchedule() const {
+    if (!_mqttClient || !_mqttClient->connected()) {
+        Serial.println("MQTT client not available or not connected. Cannot publish schedule.");
+        return;
+    }
+    String scheduleJson = getScheduleJson();
+    _mqttClient->publish(MQTT_TOPIC_SCHEDULE_STATE, scheduleJson.c_str(), false); // do not Retain the message
+    Serial.println("Published schedule to MQTT topic: schedule/state");
 }
 
 void Scheduler::loadSchedule() {
@@ -168,7 +197,7 @@ bool Scheduler::_parseAndLoad(const char* jsonPayload) {
     for (JsonObject program_json : programs) {
         if (_programCount >= 5) break;
         Program& p = _programs[_programCount];
-        p.enabled = program_json["enabled"] | true;
+        p.enabled = program_json["enabled"].as<bool>() | true;
         
         // Reset days
         for(int i=0; i<7; ++i) p.days[i] = false;

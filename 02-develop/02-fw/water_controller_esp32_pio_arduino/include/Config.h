@@ -1,3 +1,10 @@
+/**
+ * @file Config.h
+ * @brief Configuration file for the Smart Garden project.
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #ifndef CONFIG_H
 #define CONFIG_H
 
@@ -15,13 +22,13 @@
 #define MQTT_TOPIC_CONTROLLER_STATUS "smart-garden/controller/status"
 #define MQTT_TOPIC_VALVE_COMMAND "smart-garden/valve/+/command"
 #define MQTT_TOPIC_VALVE_STATE "smart-garden/valve/%d/state"
-#define MQTT_TOPIC_SCHEDULE_SET "schedule/set"
-#define MQTT_TOPIC_SCHEDULE_GET "schedule/get"
-#define MQTT_TOPIC_SCHEDULE_STATE "schedule/state"
+#define MQTT_TOPIC_SCHEDULE_SET "smart-garden/schedule/set"
+#define MQTT_TOPIC_SCHEDULE_GET "smart-garden/schedule/get"
+#define MQTT_TOPIC_SCHEDULE_STATE "smart-garden/schedule/state"
 #define MQTT_TOPIC_TEST "test_topic"
 
 // Pin Definitions
-#define LED_BUILTIN 2 // Common for many ESP32 dev boards. Adjust if yours is different.
+
 
 // Valve GPIO Assignments
 #define VALVE1_PIN_A 25

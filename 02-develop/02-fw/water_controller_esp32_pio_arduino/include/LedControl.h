@@ -1,3 +1,10 @@
+/**
+ * @file LedControl.h
+ * @brief Controls the status LED.
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #ifndef LED_CONTROL_H
 #define LED_CONTROL_H
 

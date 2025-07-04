@@ -1,3 +1,10 @@
+/**
+ * @file MqttClient.h
+ * @brief Handles all MQTT communication.
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #ifndef MQTT_CLIENT_H
 #define MQTT_CLIENT_H
 
@@ -18,13 +25,15 @@ public:
     bool subscribe(const char* topic, uint8_t qos = 0);
     bool connected();
 
+    void reconnect();
+
 private:
     WiFiClient _espClient;
     PubSubClient _client;
     Scheduler* _scheduler;
     ValveController* _valveController;
+    unsigned long lastReconnectAttempt = 0;
 
-    void reconnect();
     static void staticCallback(char* topic, byte* payload, unsigned int length);
     void handleCallback(char* topic, byte* payload, unsigned int length);
 

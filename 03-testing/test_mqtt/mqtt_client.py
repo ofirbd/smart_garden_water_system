@@ -6,9 +6,9 @@ import json
 BROKER_ADDRESS = "192.168.1.45"
 PORT = 1883
 STATUS_TOPIC = "smart-garden/controller/status"
-SCHEDULE_SET_TOPIC = "schedule/set"
-SCHEDULE_GET_TOPIC = "schedule/get"
-SCHEDULE_STATE_TOPIC = "schedule/state"
+SCHEDULE_SET_TOPIC = "smart-garden/schedule/set"
+SCHEDULE_GET_TOPIC = "smart-garden/schedule/get"
+SCHEDULE_STATE_TOPIC = "smart-garden/schedule/state"
 TEST_TOPIC = "test_topic"
 
 # Global variable to store the schedule payload
@@ -28,7 +28,7 @@ def on_message(client, userdata, msg):
     
     if msg.topic == SCHEDULE_GET_TOPIC:
         print(f"Python client received GET request on {msg.topic}. Responding with schedule.")
-        client.publish(SCHEDULE_SET_TOPIC, current_schedule_payload, qos=1, retain=True)
+        client.publish(SCHEDULE_SET_TOPIC, current_schedule_payload, qos=0, retain=False)
         print(f"Python client published schedule to {SCHEDULE_SET_TOPIC}.")
     elif msg.topic == SCHEDULE_SET_TOPIC:
         print(f"Python client received SET message on {msg.topic}. Payload: {msg.payload.decode()}")
@@ -79,8 +79,8 @@ def main():
     print(f"\nPublishing initial schedule to topic: {SCHEDULE_SET_TOPIC}")
     print(current_schedule_payload)
     
-    # Publish the schedule with retain=True so it's always available
-    client.publish(SCHEDULE_SET_TOPIC, current_schedule_payload, qos=1, retain=True)
+    # Publish the schedule with retain=False
+    client.publish(SCHEDULE_SET_TOPIC, current_schedule_payload, qos=0, retain=False)
     time.sleep(5) # Give ESP32 more time to process the schedule message
 
     print("\nSchedule published. The ESP32 should now have the new schedule.")
@@ -95,8 +95,8 @@ def main():
     print("You can restart the ESP32 to see if it loads the schedule from its flash memory.")
 
     # Keep the client running for a longer period to respond to GET requests
-    print("\nKeeping Python client alive for 30 seconds to respond to GET requests...")
-    time.sleep(30)
+    print("\nKeeping Python client alive for 5 seconds to respond to GET requests...")
+    time.sleep(5)
 
     client.loop_stop()
     client.disconnect()

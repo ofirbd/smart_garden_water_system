@@ -1,3 +1,18 @@
+/**
+ * @file TimeManager.cpp
+ * @brief Implements the TimeManager class for time synchronization.
+ * 
+ * This file contains the implementation of the TimeManager class, which is responsible
+ * for synchronizing the ESP32's internal clock with an NTP server. This ensures
+ * that the watering schedule is executed at the correct time. The class encapsulates
+ * the NTPClient library, providing a simple interface to get the current time.
+ * This abstraction makes it easy to swap out the time synchronization mechanism
+ * in the future if needed.
+ * 
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #include "TimeManager.h"
 
 // Default NTP server, GMT+0 offset, update interval 60 seconds

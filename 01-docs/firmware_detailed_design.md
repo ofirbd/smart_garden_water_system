@@ -55,9 +55,9 @@ This logic will be encapsulated within the `ValveController` module.
 
 ### 4.3. Status LED Logic
 
--   **Solid ON:** The firmware has started, and the `setup()` function has completed. The device is attempting to connect to WiFi.
--   **Blinking (1Hz):** The device is successfully connected to WiFi and the MQTT Broker and is operating normally.
--   **Fast Blinking (5Hz):** An error state or a specific process is running (e.g., captive portal for WiFi config).
+-   **Blinking (Connecting):** The LED blinks while the device is attempting to connect to WiFi.
+-   **Solid ON (Connected):** The device is successfully connected to WiFi and the MQTT Broker, and is operating normally.
+-   **Slow Blinking (Error):** The connection to the MQTT broker has been lost.
 
 ## 5. Firmware Architecture
 
@@ -84,6 +84,7 @@ The firmware will be composed of several distinct modules (classes) to ensure mo
 -   **`MqttController` Module**
     -   Manages the connection to the MQTT broker at `192.168.1.45`.
     -   Uses the `PubSubClient` library.
+    -   **Important:** The client buffer size must be increased to at least 512 bytes to handle the JSON schedule payload (e.g., `client.setBufferSize(512);`).
     -   **On connection:**
         -   Publishes `online` to `smart-garden/controller/status` (using LWT).
         -   Subscribes to command topics: `smart-garden/valve/+/command` and `smart-garden/schedule/set`.

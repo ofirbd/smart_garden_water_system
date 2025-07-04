@@ -1,3 +1,10 @@
+/**
+ * @file TimeManager.h
+ * @brief Manages time synchronization using NTP.
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #ifndef TIME_MANAGER_H
 #define TIME_MANAGER_H
 

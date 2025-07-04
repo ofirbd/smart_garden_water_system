@@ -1,3 +1,20 @@
+/**
+ * @file MqttClient.cpp
+ * @brief Implements the MqttClient class for handling MQTT communication.
+ * 
+ * This file contains the implementation of the MqttClient class, which is responsible
+ * for all MQTT-related functionality. It encapsulates the PubSubClient library to
+ * provide a clean interface for connecting, publishing, and subscribing to topics.
+ * Best practices are followed by using a static callback function to handle incoming
+ * messages, which then calls a class instance method. This allows the callback to
+ * be used with the C-style function pointer required by the library while still
+ * maintaining an object-oriented structure. The class also handles automatic
+ * reconnection to the broker, ensuring a resilient connection.
+ * 
+ * @author ofirbd
+ * @version 1.0
+ * @date 2025-07-04
+ */
 #include "MqttClient.h"
 
 MqttClient* MqttClient::_instance = nullptr; // Initialize static instance pointer
@@ -8,15 +25,23 @@ MqttClient::MqttClient(Scheduler* scheduler, ValveController* valveController)
 }
 
 void MqttClient::begin() {
+    _client.setBufferSize(512);
     _client.setServer(MQTT_BROKER_IP, MQTT_PORT);
     _client.setCallback(MqttClient::staticCallback);
 }
 
 void MqttClient::loop() {
     if (!_client.connected()) {
-        reconnect();
+        long now = millis();
+        if (now - lastReconnectAttempt > 5000) { // Try to reconnect every 5 seconds
+            lastReconnectAttempt = now;
+            Serial.println("MQTT: Attempting reconnect...");
+            reconnect();
+        }
+    } else {
+        _client.loop();
+        // Serial.println("MQTT: Client loop running."); // Too verbose, enable if needed
     }
-    _client.loop();
 }
 
 bool MqttClient::publish(const char* topic, const char* payload, bool retained) {
@@ -36,38 +61,35 @@ bool MqttClient::connected() {
 }
 
 void MqttClient::reconnect() {
-    while (!_client.connected()) {
-        Serial.print("Attempting MQTT connection...");
-        if (_client.connect(MQTT_CLIENT_ID, MQTT_TOPIC_CONTROLLER_STATUS, 1, true, "offline")) {
-            Serial.println("connected");
-            _client.publish(MQTT_TOPIC_CONTROLLER_STATUS, "online", true);
-            subscribe(MQTT_TOPIC_VALVE_COMMAND);
-            if (subscribe(MQTT_TOPIC_SCHEDULE_SET, 1)) {
-                Serial.println("Subscribed to schedule topic successfully.");
-            } else {
-                Serial.println("Failed to subscribe to schedule topic.");
-            }
-            if (subscribe(MQTT_TOPIC_SCHEDULE_GET, 1)) {
-                Serial.println("Subscribed to schedule GET topic successfully.");
-            } else {
-                Serial.println("Failed to subscribe to schedule GET topic.");
-            }
-            // Request the current schedule from the broker
-            publish(MQTT_TOPIC_SCHEDULE_GET, (const uint8_t*)"", 0, false); // QoS 1, not retained, payload length 0
-            Serial.println("Requested schedule from broker.");
-            // Force client.loop() for a few seconds to receive the schedule response
-            unsigned long startMillis = millis();
-            while (millis() - startMillis < 5000) { // Loop for 5 seconds
-                _client.loop();
-                delay(10); // Small delay to yield to other tasks
-            }
-            Serial.println("Finished forced client.loop() for schedule request.");
+    Serial.print("Attempting MQTT connection...");
+    if (_client.connect(MQTT_CLIENT_ID, MQTT_TOPIC_CONTROLLER_STATUS, 1, true, "offline")) {
+        Serial.println("connected");
+        _client.publish(MQTT_TOPIC_CONTROLLER_STATUS, "online", false);
+        subscribe(MQTT_TOPIC_VALVE_COMMAND);
+        if (subscribe(MQTT_TOPIC_SCHEDULE_SET, 1)) {
+            Serial.println("Subscribed to schedule topic successfully.");
         } else {
-            Serial.print("failed, rc=");
-            Serial.print(_client.state());
-            Serial.println(" try again in 5 seconds");
-            delay(5000);
+            Serial.print("Failed to subscribe to schedule topic. Error: ");
+            Serial.println(_client.state());
         }
+        if (subscribe(MQTT_TOPIC_SCHEDULE_GET, 1)) {
+            Serial.println("Subscribed to schedule GET topic successfully.");
+        } else {
+            Serial.print("Failed to subscribe to schedule GET topic. Error: ");
+            Serial.println(_client.state());
+        }
+        // Process any retained messages immediately after subscribing
+        _client.loop();
+        delay(100); // Give a small delay for the message to be processed
+
+        // Request the current schedule from the broker. This allows the device to get the latest schedule
+        // right after connecting, which is useful if the schedule was updated while the device was offline.
+        publish(MQTT_TOPIC_SCHEDULE_GET, "", false); // QoS 0, not retained, empty payload.
+        Serial.println("Published request for schedule on topic 'schedule/get'.");
+    } else {
+        Serial.print("failed, rc=");
+        Serial.print(_client.state());
+        Serial.println(" try again in 5 seconds");
     }
 }
 
@@ -81,70 +103,77 @@ void MqttClient::handleCallback(char* topic, byte* payload, unsigned int length)
     // Debug: Always print the raw topic received
     Serial.print("*** Callback triggered for topic: ");
     Serial.println(topic);
+    Serial.print("Payload length: ");
+    Serial.println(length);
 
     // Create a temporary buffer to safely null-terminate the payload
     char messagePayload[length + 1];
     memcpy(messagePayload, payload, length);
     messagePayload[length] = '\0'; // Safely null-terminate
 
-    // Create a String object from the topic char* for safer comparison
-    String topicStr = String(topic);
+    // Debug: Print strcmp results for known topics
+    Serial.print("strcmp(topic, MQTT_TOPIC_SCHEDULE_SET): ");
+    Serial.println(strcmp(topic, MQTT_TOPIC_SCHEDULE_SET));
+    Serial.print("strcmp(topic, MQTT_TOPIC_SCHEDULE_GET): ");
+    Serial.println(strcmp(topic, MQTT_TOPIC_SCHEDULE_GET));
+    Serial.print("strcmp(topic, MQTT_TOPIC_TEST): ");
+    Serial.println(strcmp(topic, MQTT_TOPIC_TEST));
 
-    // Debug: Print the raw received topic and its length (using strlen for topic)
-    Serial.print("Raw received topic (strlen ");
-    Serial.print(strlen(topic));
-    Serial.print(", payload length ");
-    Serial.print(length);
-    Serial.print("): [");
-    for (unsigned int i = 0; i < strlen(topic); ++i) {
-        Serial.print(topic[i]);
-    }
-    Serial.println("]");
-
-    // Debug: Print the configured schedule topic and its length
-    Serial.print("Configured schedule topic (length ");
-    Serial.print(strlen(MQTT_TOPIC_SCHEDULE_SET));
-    Serial.print("): [");
-    Serial.print(MQTT_TOPIC_SCHEDULE_SET);
-    Serial.println("]");
-
-    // Handle schedule updates
-    if (topicStr == MQTT_TOPIC_SCHEDULE_SET) {
+    // Use strcmp for exact topic matching, which is safer and more efficient.
+    if (strcmp(topic, MQTT_TOPIC_SCHEDULE_SET) == 0) {
         Serial.println("MATCH: Received new schedule payload.");
-        _scheduler->updateSchedule(messagePayload);
-        Serial.println("DEBUG: scheduler.updateSchedule() called.");
+        // The payload is the JSON string for the schedule.
+        if (_scheduler->updateSchedule(messagePayload)) {
+            Serial.println("Schedule updated successfully.");
+            // Optionally, publish the new schedule state back to the broker
+            String currentSchedule = _scheduler->getScheduleJson();
+            publish(MQTT_TOPIC_SCHEDULE_STATE, currentSchedule.c_str(), false);
+        } else {
+            Serial.println("Failed to update schedule.");
+        }
+        return; // Message handled
     }
 
-    // Handle valve commands
-    int valveNumber = 0;
-    int parsedItems = sscanf(topic, "smart-garden/valve/%d/command", &valveNumber);
+    if (strcmp(topic, MQTT_TOPIC_SCHEDULE_GET) == 0) {
+        Serial.println("Received schedule GET request. Publishing current schedule.");
+        String scheduleJson = _scheduler->getScheduleJson();
+        // Publish with retain=false to ensure the latest schedule is available
+        publish(MQTT_TOPIC_SCHEDULE_STATE, scheduleJson.c_str(), false);
+        return; // Message handled
+    }
 
-    if (parsedItems == 1) {
-        String commandStr = String(messagePayload);
-        commandStr.toUpperCase();
+    if (strcmp(topic, MQTT_TOPIC_TEST) == 0) {
+        Serial.print("Received message on test topic: ");
+        Serial.println(messagePayload);
+        return; // Message handled
+    }
+
+    // Handle valve commands using sscanf for pattern matching.
+    int valveNumber = 0;
+    if (sscanf(topic, "smart-garden/valve/%d/command", &valveNumber) == 1) {
+        String command = String(messagePayload);
+        command.toUpperCase();
 
         if (valveNumber >= 1 && valveNumber <= 3) {
             char stateTopic[50];
             sprintf(stateTopic, MQTT_TOPIC_VALVE_STATE, valveNumber);
 
-            if (commandStr == "OPEN") {
+            if (command == "OPEN") {
                 _valveController->openValve(valveNumber);
-                _client.publish(stateTopic, "open", true);
-            } else if (commandStr == "CLOSE") {
+                publish(stateTopic, "open", false);
+            } else if (command == "CLOSE") {
                 _valveController->closeValve(valveNumber);
-                _client.publish(stateTopic, "closed", true);
+                publish(stateTopic, "closed", false);
             } else {
-                Serial.printf("Unknown command '%s' for valve %d.\n", commandStr.c_str(), valveNumber);
+                Serial.printf("Unknown command '%s' for valve %d.\n", command.c_str(), valveNumber);
             }
         } else {
             Serial.printf("Invalid valve number (%d) parsed from topic. Must be 1-3.\n", valveNumber);
         }
-    } else if (topicStr == MQTT_TOPIC_SCHEDULE_GET) {
-        Serial.println("Received schedule GET request. Publishing current schedule.");
-        String scheduleJson = _scheduler->getScheduleJson();
-        _client.publish(MQTT_TOPIC_SCHEDULE_SET, (const uint8_t*)scheduleJson.c_str(), scheduleJson.length(), true); // Publish with retain=true
-    } else if (topicStr == MQTT_TOPIC_TEST) {
-        Serial.print("Received message on test topic: ");
-        Serial.println(messagePayload);
+        return; // Message handled
     }
+
+    // If the topic was not handled by any of the above, print a warning.
+    Serial.print("Warning: Unhandled MQTT topic: ");
+    Serial.println(topic);
 }
