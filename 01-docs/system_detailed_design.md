@@ -4,18 +4,58 @@
 
 This document provides a detailed design for the Smart Garden Watering System. It covers the hardware, firmware, and software components, outlining their architecture, interactions, and implementation details. The system is designed to be modular and extensible for future additions like sensors.
 
-## 2. System Architecture
+## 2. System Architecture (High-Level)
 
-The system consists of three main components:
+The architecture remains similar, with the combined ESP32 unit now including temperature and humidity sensors.
 
-1.  **ESP32 Irrigation Controller:** The hardware device responsible for controlling the water valves based on a schedule or manual commands.
-2.  **MQTT Broker:** A central messaging server (running on a Raspberry Pi) that facilitates communication between the controller and the web application.
-3.  **Web Application:** A user interface for monitoring the system, controlling the valves manually, and managing the irrigation schedule.
+```
++-------------------+             +-----------------------+
+|                   |             |                       |
+| Mobile Application| <---------> | Central Control Unit  |
+| (Android/iOS)     | (MQTT/HTTP) | (Raspberry Pi)        |
+|                   |             | - MQTT Broker         |
++-------------------+             | - Data Storage        |
+                                  | - API/Web Server      |
+                                  +-----------+-----------+
+                                              |
+                                              | MQTT
+                                              |
+                                  +-----------+-----------+
+                                  |                       |
+                                  | Combined Smart Water  |
+                                  | Unit (ESP32)          |
+                                  | - 3x Valve Actuation  |
+                                  | - 1x Water Flow Sensor|
+                                  | - Temp/Hum Sensors    |
+                                  | - Status Reporting    |
+                                  | - Data Reporting      |
+                                  | - Battery/Power       |
+                                  +-----------------------+
+```
 
-The communication flow is as follows:
-- The **ESP32 Controller** connects to the home WiFi and the MQTT Broker. It subscribes to command topics and publishes its status and sensor data.
-- The **Web Application** connects to the MQTT Broker to send commands and receive status updates from the controller.
-- The user interacts only with the **Web Application**.
+The system consists of the following main components:
+
+1.  **Combined Smart Water Unit (ESP32):** This is the edge device responsible for direct interaction with the garden. It includes:
+    *   **Valve Actuation:** Controls three water valves.
+    *   **Water Flow Sensor:** Monitors water consumption.
+    *   **Temperature/Humidity Sensors:** Gathers environmental data for smarter watering decisions.
+    *   **Status & Data Reporting:** Communicates its operational status, sensor readings, and battery/power information.
+
+2.  **Central Control Unit (Raspberry Pi):** This acts as the central hub of the system, typically hosted on a Raspberry Pi. Its functions include:
+    *   **MQTT Broker:** Facilitates real-time, asynchronous communication between all components.
+    *   **Data Storage:** Stores historical data from sensors and system events.
+    *   **API/Web Server:** Provides an interface for the mobile application to interact with the system.
+
+3.  **Mobile Application:** A cross-platform application (Android/iOS, or a mobile-friendly web app) that serves as the user interface for monitoring and control. It allows users to:
+    *   View real-time system status (valve states, sensor data).
+    *   Manually control individual valves.
+    *   Manage and update watering schedules.
+
+**Communication Flow:**
+
+*   The **Combined Smart Water Unit (ESP32)** connects to the home WiFi and communicates with the **Central Control Unit (Raspberry Pi)** via MQTT. It subscribes to command topics (e.g., for valve control, schedule updates) and publishes its status, sensor data, and water usage information.
+*   The **Mobile Application** communicates with the **Central Control Unit (Raspberry Pi)**. This communication can be via MQTT directly or, more commonly, through an API/Web Server on the Raspberry Pi that then interacts with the MQTT Broker. This setup prevents exposing MQTT credentials directly to the mobile app and allows for more complex data processing and presentation.
+*   The user primarily interacts with the **Mobile Application** to manage and monitor the entire system.
 
 ## 3. Hardware Detailed Design
 
