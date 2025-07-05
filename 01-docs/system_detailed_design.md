@@ -116,53 +116,79 @@ A clear and hierarchical topic structure will be used:
     -   Edit existing programs, including enabling/disabling, selecting days of the week, setting start times, and defining watering durations for specific valves.
     -   Save updated schedules, which are then sent to the ESP32 for persistence.
 
-## 6. Web Application Operation
+## 6. Mobile Web Application
 
-To run the web application, both the backend and frontend components must be started.
+A mobile-friendly web application, built with Flutter, provides a streamlined experience for users on mobile devices. It is a Progressive Web App (PWA) that can be accessed through any modern mobile browser, offering a native-like feel without the need for app store installation.
 
-### 6.1. Directory Structure
+### 6.1. Technology Stack
+-   **Framework:** Flutter Web.
+-   **State Management:** Provider or Riverpod for managing application state.
+-   **Communication:** Direct WebSocket connection to the backend server to receive real-time updates and send commands.
+
+### 6.2. Key Features
+-   **Dashboard:** A mobile-optimized view showing controller status and valve states.
+-   **Schedule Editor:** A touch-friendly interface for managing watering schedules.
+-   **Responsive Design:** The UI is designed to work seamlessly on various screen sizes.
+
+### 6.3. Operation
+
+The mobile web application is served directly by the Node.js backend. To access the application:
+
+1.  Ensure the Node.js backend server is running.
+2.  Open a web browser on your mobile device or computer.
+3.  Navigate to the address where your backend server is hosted (e.g., `http://<your_raspberry_pi_ip>:3001`).
+
+The application will load in your browser, providing a mobile-friendly interface for monitoring and controlling your smart garden system.
+
+## 7. Web Application Operation
+
+The original web application consists of a Node.js backend and a React frontend, which need to be run separately.
+
+### 7.1. Directory Structure
 The web application code is located under `02-develop/03-sw/web-app/`:
 -   `02-develop/03-sw/web-app/backend/`: Contains the Node.js Express server.
 -   `02-develop/03-sw/web-app/frontend/`: Contains the React single-page application.
 
-### 6.2. Starting the Backend Server
-1.  Navigate to the backend directory:
+### 7.2. Starting the Backend Server
+1.  Open a terminal or command prompt.
+2.  Navigate to the backend directory:
     ```bash
     cd 02-develop/03-sw/web-app/backend
     ```
-2.  Install dependencies (if not already done):
+3.  Install dependencies (if not already done, or if `package.json` has changed):
     ```bash
     npm install
     ```
-3.  Start the server:
+4.  Start the server:
     ```bash
     npm start
     ```
-    The backend server will typically run on `http://localhost:3001`.
+    The backend server will typically run on `http://localhost:3001`. Keep this terminal open.
 
-### 6.3. Starting the Frontend Application
-1.  Navigate to the frontend directory:
+### 7.3. Starting the Frontend Application
+1.  Open a *separate* terminal or command prompt.
+2.  Navigate to the frontend directory:
     ```bash
     cd 02-develop/03-sw/web-app/frontend
     ```
-2.  Install dependencies (if not already done):
+3.  Install dependencies (if not already done, or if `package.json` has changed):
     ```bash
     npm install
     ```
-3.  Start the development server:
+4.  Start the development server:
     ```bash
     npm start
     ```
-    The React development server will typically run on `http://localhost:3000` and automatically open in your browser.
+    This will usually open a new browser tab at `http://localhost:3000` (or another available port) where your React application will be running.
 
-### 6.4. Communication Flow
+### 7.4. Communication Flow
 -   The React frontend communicates with the Node.js backend via HTTP API calls (for sending commands) and WebSockets (for receiving real-time MQTT updates).
 -   The Node.js backend maintains a persistent connection to the MQTT broker.
 -   When the frontend sends a command (e.g., open valve, save schedule), it makes an HTTP POST request to the backend's `/api/command` endpoint. The backend then publishes this command to the appropriate MQTT topic.
 -   The backend subscribes to relevant MQTT topics (e.g., controller status, valve states, schedule state). Any messages received from the MQTT broker are immediately relayed to all connected frontend clients via WebSocket.
 -   Upon a new WebSocket connection from the frontend, the backend immediately sends the last known retained states for controller status and schedule to ensure the frontend displays up-to-date information without delay.
 
-### 6.5. Key Files
+### 7.5. Key Files
 -   `02-develop/03-sw/web-app/backend/server.js`: Main backend server logic.
 -   `02-develop/03-sw/web-app/backend/package.json`: Backend dependencies.
 -   `02-develop/03-sw/web-app/frontend/src/App.js`: Main React application component, handles routing and overall state.

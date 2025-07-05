@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const http = require('http');
 const mqtt = require('mqtt');
 const WebSocket = require('ws');
@@ -63,6 +64,26 @@ wss.on('connection', (ws) => {
     ws.send(JSON.stringify({ topic: 'smart-garden/controller/status', message: lastControllerStatus }));
     ws.send(JSON.stringify({ topic: 'smart-garden/schedule/state', message: lastScheduleState }));
 
+    ws.on('message', (message) => {
+        console.log('WebSocket Message Received:', message);
+        try {
+            const data = JSON.parse(message);
+            if (data.type === 'valve_control') {
+                const { valve, command } = data.payload;
+                const topic = `smart-garden/valve/${valve}/command`;
+                client.publish(topic, command, { qos: 1 });
+                console.log(`Published to MQTT: ${topic} -> ${command}`);
+            } else if (data.type === 'schedule_set') {
+                const schedule = JSON.stringify(data.payload);
+                const topic = 'smart-garden/schedule/set';
+                client.publish(topic, schedule, { qos: 1, retain: true });
+                console.log(`Published to MQTT: ${topic} -> ${schedule}`);
+            }
+        } catch (e) {
+            console.error('Failed to parse WebSocket message:', e);
+        }
+    });
+
     ws.on('close', () => {
         console.log('Client disconnected from WebSocket');
     });
@@ -86,6 +107,15 @@ app.post('/api/command', (req, res) => {
     } else {
         res.status(400).send({ status: 'error', message: 'Invalid command: topic must be provided and message must be a string.' });
     }
+});
+
+    // Serve the Flutter web app
+const buildPath = path.join(__dirname, '..', '..', 'mobile_web_app', 'build', 'web');
+app.use(express.static(buildPath));
+
+// Catch-all route to serve index.html for single-page application
+app.get('*', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3001;
