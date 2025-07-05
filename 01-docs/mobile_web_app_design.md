@@ -29,10 +29,12 @@ The application will follow Material Design guidelines to provide a clean and in
     -   The connection status to the backend.
     -   The online/offline status of the ESP32 controller.
     -   The current state of each valve (open/closed) with manual control buttons.
+    ![Dashboard Screenshot](dashboard_screenshot.jpg)
 -   **Schedule Editor Screen:** A screen for viewing and editing the watering schedule. It will allow the user to:
     -   Enable or disable the entire schedule.
     -   Add, edit, or delete watering programs.
     -   Define the days, start time, and duration for each watering action.
+    ![Schedule Editor Screenshot](schedule_editor_screenshot.jpg)
 
 ## 5. Communication
 
