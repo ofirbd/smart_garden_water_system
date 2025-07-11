@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/web_socket_service.dart';
 import 'package:mobile_web_app/screens/schedule_editor_screen.dart';
+import 'dart:html' as html;
 
 void main() {
   runApp(
@@ -43,7 +44,7 @@ class AppState extends ChangeNotifier {
     ValveState(name: 'Valve 2', isOpen: false),
     ValveState(name: 'Valve 3', isOpen: false),
   ];
-  String _webSocketUrl = 'ws://192.168.1.45:3001'; // Default URL
+  String _webSocketUrl = 'ws://${html.window.location.hostname}:3001'; // Dynamic URL
   WateringSchedule _schedule = WateringSchedule(enabled: false, programs: []);
 
   String get backendStatus => _backendStatus;
