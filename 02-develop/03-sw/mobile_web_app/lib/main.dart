@@ -43,7 +43,7 @@ class AppState extends ChangeNotifier {
     ValveState(name: 'Valve 2', isOpen: false),
     ValveState(name: 'Valve 3', isOpen: false),
   ];
-  String _webSocketUrl = 'ws://localhost:3001'; // Default URL
+  String _webSocketUrl = 'ws://192.168.1.45:3001'; // Default URL
   WateringSchedule _schedule = WateringSchedule(enabled: false, programs: []);
 
   String get backendStatus => _backendStatus;
