@@ -11,17 +11,17 @@ The architecture remains similar, with the combined ESP32 unit now including tem
 ```
 +-------------------+             +-----------------------+
 |                   |             |                       |
-| Mobile Application| <---------> | Central Control Unit  |
-| (Android/iOS)     | (MQTT/HTTP) | (Raspberry Pi)        |
+| Web Application   | <---------> | Central Control Unit  |
+| (React)           | (HTTP/WS)   | (Raspberry Pi)        |
 |                   |             | - MQTT Broker         |
 +-------------------+             | - Data Storage        |
                                   | - API/Web Server      |
-                                  +-----------+-----------+
-                                              |
-                                              | MQTT
-                                              |
-                                  +-----------+-----------+
-                                  |                       |
++-------------------+             +-----------+-----------+
+|                   | (WebSocket)           |
+| Mobile Web App    | <--------->           | MQTT
+| (Flutter)         |                       |
+|                   |             +-----------+-----------+
++-------------------+             |                       |
                                   | Combined Smart Water  |
                                   | Unit (ESP32)          |
                                   | - 3x Valve Actuation  |
@@ -179,6 +179,36 @@ The mobile web application is served directly by the Node.js backend. To access 
 3.  Navigate to the address where your backend server is hosted (e.g., `http://<your_raspberry_pi_ip>:3001`).
 
 The application will load in your browser, providing a mobile-friendly interface for monitoring and controlling your smart garden system.
+
+### 6.4. UI/UX Design
+
+The application will follow Material Design guidelines to provide a clean and intuitive user interface.
+
+#### 6.4.1. Screens
+
+-   **Splash Screen:** A simple loading screen shown when the app is starting.
+-   **Dashboard Screen:** The main screen of the app. It will display:
+    -   The connection status to the backend.
+    -   The online/offline status of the ESP32 controller.
+    -   The current state of each valve (open/closed) with manual control buttons.
+-   **Schedule Editor Screen:** A screen for viewing and editing the watering schedule. It will allow the user to:
+    -   Enable or disable the entire schedule.
+    -   Add, edit, or delete watering programs.
+    -   Define the days, start time, and duration for each watering action.
+
+### 6.5. Communication
+
+The app will use a WebSocket connection to the backend for real-time, bidirectional communication.
+
+-   **Outgoing Messages:** When the user performs an action (e.g., toggles a valve, saves a schedule), the app sends a JSON message to the backend via the WebSocket.
+-   **Incoming Messages:** The app listens for messages from the backend to update the UI with the latest status of the controller and valves.
+
+### 6.6. State Management
+
+The Provider package will be used for state management to separate the UI from the business logic.
+
+-   **`AppState`:** A central model to hold the application's state, such as the connection status, controller status, valve states, and the watering schedule.
+-   **`ChangeNotifierProvider`:** Used to provide the `AppState` to the widget tree. Widgets will listen for changes in the state and rebuild accordingly.
 
 ## 7. Web Application Operation
 

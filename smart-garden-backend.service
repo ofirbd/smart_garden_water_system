@@ -1,0 +1,13 @@
+[Unit]
+Description=Smart Garden Backend Service
+After=network.target
+
+[Service]
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/smart-garden-backend
+ExecStart=/usr/bin/node /home/pi/smart-garden-backend/server.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

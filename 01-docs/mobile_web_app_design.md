@@ -15,6 +15,24 @@ This document provides a detailed design for the mobile-friendly web application
 
 The mobile web app is a single-page application (SPA) that communicates with the existing backend server. It does not communicate directly with the MQTT broker.
 
+```
++-------------------+             +-----------------------+
+|                   |             |                       |
+| Mobile Web App    | <---------> | Central Control Unit  |
+| (Flutter)         |  (WebSocket)| (Raspberry Pi)        |
+|                   |             | - MQTT Broker         |
++-------------------+             | - API/Web Server      |
+                                  +-----------+-----------+
+                                              |
+                                              | MQTT
+                                              |
+                                  +-----------+-----------+
+                                  |                       |
+                                  | Combined Smart Water  |
+                                  | Unit (ESP32)          |
+                                  +-----------------------+
+```
+
 -   **Frontend:** The Flutter web app, responsible for the UI and user interaction.
 -   **Backend:** The existing Node.js server, which relays messages between the web app and the MQTT broker.
 
