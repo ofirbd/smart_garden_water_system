@@ -1,44 +1,34 @@
-"Reference","Qty","Value","DNP","Exclude from BOM","Exclude from Board","Footprint","LCSC"
-"C1,C20","2","1uF","","","","Capacitor_SMD:C_0603_1608Metric","C15849"
-"C2,C6","2","10uF","","","","Capacitor_SMD:C_0805_2012Metric","C15850"
-"C3,C4,C15","3","10nF","","","","Capacitor_SMD:C_0603_1608Metric","C57112"
-"C5,C11,C13,C18,C19,C21,C22,C23","8","100nF","","","","Capacitor_SMD:C_0603_1608Metric","C14663"
-"C7","1","10uF","","","","Capacitor_SMD:C_0603_1608Metric","C96446"
-"C8,C9","2","12pf","","","","Capacitor_SMD:C_0603_1608Metric","C38523"
-"C10,C12","2","22uF","","","","Capacitor_SMD:C_1206_3216Metric","C12891"
-"C14,C16","2","22pF","","","","Capacitor_SMD:C_0603_1608Metric","C1653"
-"C17","1","4700uF","","","","Capacitor_THT:CP_Radial_D13.0mm_P5.00mm",""
-"D1,D3,D4","3","1N5819","","","","Diode_SMD:D_SOD-123","C8598"
-"D2","1","Yellow LED","","","","LED_SMD:LED_0603_1608Metric","C2296"
-"D5","1","White LED","","","","LED_SMD:LED_0603_1608Metric","C2290"
-"D6","1","Red LED","","","","LED_SMD:LED_0603_1608Metric","C2286"
-"H1,H2,H3,H4","4","MountingHole","","Excluded from BOM","","MountingHole:MountingHole_2.2mm_M2",""
-"J1","1","Conn_01x02","","","","Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",""
-"J2","1","TYPE-C-31-M-12","","","","TYPE-C-31-M-12:HRO_TYPE-C-31-M-12","C165948"
-"J3","1","Screw_Terminal_01x03","","","","TerminalBlock:TerminalBlock_Altech_AK300-3_P5.00mm",""
-"J4,J5,J6","3","Screw_Terminal_01x02","","","","MyLibrary:TerminalBlock_Altech_AK300-2_P5.00mm","C474881"
-"L1","1","4.7uH","","","","Inductor_SMD:L_APV_ANR4018","C98400"
-"Q1,Q5","2","AO3401A","","","","Package_TO_SOT_SMD:SOT-23","C10487"
-"Q2,Q3,Q4","3","MMBT2222A","","","","Package_TO_SOT_SMD:SOT-23","C8512"
-"R1,R14,R15,R20,R21","5","1M","","","","Resistor_SMD:R_0603_1608Metric","C22935"
-"R2,R3,R9,R10,R11,R12,R24","7","10k","","","","Resistor_SMD:R_0603_1608Metric","C25804"
-"R4,R5,R28,R29","4","5k1","","","","Resistor_SMD:R_0603_1608Metric","C23186"
-"R6,R7,R8","3","2k4","","","","Resistor_SMD:R_0603_1608Metric","C22940"
-"R16,R23,R30","3","0R","","","","Resistor_SMD:R_0603_1608Metric",""
-"R17","1","300k","","","","Resistor_SMD:R_0603_1608Metric","C23024"
-"R18","1","15k","","","","Resistor_SMD:R_0603_1608Metric","C22809"
-"R22","1","47k","","","","Resistor_SMD:R_0603_1608Metric",""
-"R25,R26,R27","3","30k","","","","Resistor_SMD:R_0603_1608Metric","C22984"
-"SW1,SW2","2","TS-1088-AR02016","","","","MyLibrary:SW_Push_SPST_SMD_5mmx3mm","C720477"
-"TP1","1","IO18","","","","TestPoint:TestPoint_THTPad_D2.0mm_Drill1.0mm",""
-"TP2","1","IO19","","","","TestPoint:TestPoint_THTPad_D2.0mm_Drill1.0mm",""
-"TP3","1","IO21","","","","TestPoint:TestPoint_THTPad_D2.0mm_Drill1.0mm",""
-"TP4","1","IO22","","","","TestPoint:TestPoint_THTPad_D2.0mm_Drill1.0mm",""
-"U1","1","ESP32-WROOM-32E","","","","RF_Module:ESP32-WROOM-32E","C701341"
-"U2","1","MCP1702T-3302E","","","","Package_TO_SOT_SMD:SOT-89-3","C88418"
-"U3","1","TPD4E02B04DQA","","","","Package_SON:USON-10_2.5x1.0mm_P0.5mm","C1973193"
-"U4","1","CH340C","","","","Package_SO:SOIC-16_3.9x9.9mm_P1.27mm",""
-"U5","1","DS18B20Z","","","","Package_SO:SOIC-8_5.3x6.2mm_P1.27mm","C5261093"
-"U6","1","MT3608","","","","Package_TO_SOT_SMD:SOT-23-6",""
-"U7,U8,U9","3","DRV8871DDA","","","","Package_SO:Texas_HTSOP-8-1EP_3.9x4.9mm_P1.27mm_EP2.95x4.9mm_Mask2.4x3.1mm_ThermalVias","C75864"
-"Y1","1","32.768kHz","","","","Crystal:Crystal_SMD_3215-2Pin_3.2x1.5mm","C32346"
+Comment,Designator,Footprint,LCSC Part Number
+1uF,"C1,C20",Capacitor_SMD:C_0603_1608Metric,C15849
+10uF,"C2,C6",Capacitor_SMD:C_0805_2012Metric,C15850
+10nF,"C3,C4,C15",Capacitor_SMD:C_0603_1608Metric,C57112
+100nF,"C5,C13,C17,C18,C19,C21,C22,C23",Capacitor_SMD:C_0603_1608Metric,C14663
+10uF,C7,Capacitor_SMD:C_0603_1608Metric,C96446
+18pf,"C8,C9",Capacitor_SMD:C_0603_1608Metric,C1647
+22uF,"C10,C12",Capacitor_SMD:C_1206_3216Metric,C12891
+22pF,"C14,C16",Capacitor_SMD:C_0603_1608Metric,C1653
+1N5819,"D1,D3,D4",Diode_SMD:D_SOD-123,C8598
+Yellow LED,D2,LED_SMD:LED_0603_1608Metric,C2296
+Red LED,D6,LED_SMD:LED_0603_1608Metric,C2286
+TYPE-C-31-M-12,J2,TYPE-C-31-M-12:HRO_TYPE-C-31-M-12,C165948
+4.7uH,L1,Inductor_SMD:L_APV_ANR4018,C98400
+AO3401A,"Q1,Q5",Package_TO_SOT_SMD:SOT-23,C10487
+MMBT2222A,"Q2,Q3,Q4",Package_TO_SOT_SMD:SOT-23,C8512
+1M,"R1,R20,R21",Resistor_SMD:R_0603_1608Metric,C22935
+10k,"R2,R3,R9,R10,R11,R12,R13,R14,R24",Resistor_SMD:R_0603_1608Metric,C25804
+5k1,"R4,R5,R6,R29",Resistor_SMD:R_0603_1608Metric,C23186
+2k4,"R7,R8",Resistor_SMD:R_0603_1608Metric,C22940
+300k,R17,Resistor_SMD:R_0603_1608Metric,C23024
+15k,R18,Resistor_SMD:R_0603_1608Metric,C22809
+47k,R22,Resistor_SMD:R_0603_1608Metric,C25819
+30k,"R25,R26,R27",Resistor_SMD:R_0603_1608Metric,C22984
+0R,R30,Resistor_SMD:R_0603_1608Metric,C21189
+TS-1088-AR02016,"SW1,SW2",MyLibrary:SW_Push_SPST_SMD_5mmx3mm,C720477
+ESP32-WROOM-32E,U1,RF_Module:ESP32-WROOM-32E,C701341
+MCP1702T-3302E,U2,Package_TO_SOT_SMD:SOT-89-3,C88418
+TPD4E02B04DQA,U3,Package_SON:USON-10_2.5x1.0mm_P0.5mm,C1973193
+CH340C,U4,Package_SO:SOIC-16_3.9x9.9mm_P1.27mm,C84681
+DS18B20Z,U5,Package_SO:SOIC-8_5.3x6.2mm_P1.27mm,C5261093
+MT3608,U6,Package_TO_SOT_SMD:SOT-23-6,C84817
+DRV8871DDA,"U7,U8,U9",Package_SO:Texas_HTSOP-8-1EP_3.9x4.9mm_P1.27mm_EP2.95x4.9mm_Mask2.4x3.1mm_ThermalVias,C75864
+32.768kHz,Y1,Crystal:Crystal_SMD_3215-2Pin_3.2x1.5mm,C32346
