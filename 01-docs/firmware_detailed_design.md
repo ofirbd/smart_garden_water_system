@@ -26,15 +26,16 @@ This section defines the mapping of physical hardware to the firmware logic.
 
 | Function              | GPIO | Direction | Notes                                      |
 | --------------------- | ---- | --------- | ------------------------------------------ |
-| **Valve 1 Control A** | 25   | OUTPUT    | H-Bridge Input 1 for Valve 1               |
-| **Valve 1 Control B** | 26   | OUTPUT    | H-Bridge Input 2 for Valve 1               |
+| **Valve 1 Control A** | 14  | OUTPUT    | H-Bridge Input 1 for Valve 1               |
+| **Valve 1 Control B** | 12  | OUTPUT    | H-Bridge Input 2 for Valve 1               |
 | **Valve 2 Control A** | 16   | OUTPUT    | H-Bridge Input 1 for Valve 2               |
 | **Valve 2 Control B** | 17   | OUTPUT    | H-Bridge Input 2 for Valve 2               |
-| **Valve 3 Control A** | 12   | OUTPUT    | H-Bridge Input 1 for Valve 3               |
-| **Valve 3 Control B** | 14   | OUTPUT    | H-Bridge Input 2 for Valve 3               |
+| **Valve 3 Control A** | 25  | OUTPUT    | H-Bridge Input 1 for Valve 3               |
+| **Valve 3 Control B** | 26  | OUTPUT    | H-Bridge Input 2 for Valve 3               |
 | **Water Flow Sensor** | 13   | INPUT     | (Future) Pulse counting input              |
 | **Temp Sensor (1-Wire)**| 15   | INPUT     | (Future) Dallas Temperature Sensor         |
 | **Built-in LED**      | 2    | OUTPUT    | (Usually GPIO 2 on most dev boards)        |
+| **Enable 12V** | 27 | OUTPUT | Enable 12V for H-Bridge drivers |
 
 ### 4.2. Latching Valve Control Logic
 

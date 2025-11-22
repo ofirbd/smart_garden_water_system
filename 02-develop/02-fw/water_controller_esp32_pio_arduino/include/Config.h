@@ -28,15 +28,16 @@
 #define MQTT_TOPIC_TEST "test_topic"
 
 // Pin Definitions
-
+#define LED_BUILTIN 2
+#define Enable_12V 27
 
 // Valve GPIO Assignments
-#define VALVE1_PIN_A 25
-#define VALVE1_PIN_B 26
+#define VALVE1_PIN_A 14
+#define VALVE1_PIN_B 12
 #define VALVE2_PIN_A 16
 #define VALVE2_PIN_B 17
-#define VALVE3_PIN_A 12
-#define VALVE3_PIN_B 14
+#define VALVE3_PIN_A 25
+#define VALVE3_PIN_B 26
 
 // Latching valve pulse duration in milliseconds
 #define VALVE_PULSE_MS 150

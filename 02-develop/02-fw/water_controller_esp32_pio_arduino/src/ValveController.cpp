@@ -21,6 +21,11 @@ ValveController::ValveController() {
 }
 
 void ValveController::begin() {
+
+    // set enable_12V pin to output
+    pinMode(Enable_12V, OUTPUT);
+    digitalWrite(Enable_12V, HIGH); //TODO temporary - should be changed to turn on before each time need to open/close valves
+
     // Set all valve control pins to output
     pinMode(VALVE1_PIN_A, OUTPUT);
     pinMode(VALVE1_PIN_B, OUTPUT);

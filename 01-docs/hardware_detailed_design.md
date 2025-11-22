@@ -116,20 +116,21 @@ The circuit is designed to prioritize USB power and automatically failover to th
 
 ## 4. Pinout and Wiring
 
-| ESP32 Pin | Function                     | Connected To                 | Notes                                       |
-|-----------|------------------------------|------------------------------|---------------------------------------------|
-| GPIO25    | Valve 1 Phase (PH)           | DRV8871 #1 - PH              | Controls polarity for Valve 1               |
-| GPIO26    | Valve 1 Enable (EN)          | DRV8871 #1 - EN              | Enables pulse for Valve 1                   |
-| GPIO16    | Valve 2 Phase (PH)           | DRV8871 #2 - PH              | Controls polarity for Valve 2               |
-| GPIO17    | Valve 2 Enable (EN)          | DRV8871 #2 - EN              | Enables pulse for Valve 2                   |
-| GPIO12    | Valve 3 Phase (PH)           | DRV8871 #3 - PH              | Controls polarity for Valve 3               |
-| GPIO14    | Valve 3 Enable (EN)          | DRV8871 #3 - EN              | Enables pulse for Valve 3                   |
-| GPIO32    | 12V Boost Converter Enable   | Boost Converter EN Pin       | Activates the 12V supply for valves       |
-| GPIO13    | Water Flow Sensor Pulse      | YF-S201 Signal Pin           | Utilizes ESP32 Pulse Counter                |
-| GPIO15    | 1-Wire Data                  | DS18B20 Data Pin             | Requires a 4.7kΩ pull-up resistor to 3.3V   |
-| GPIO2     | Status LED                   | On-board LED                 | For visual feedback                         |
-| GPIO34    | 9V Battery Voltage Sense     | Voltage Divider from 9V Bat  | For backup battery level monitoring         |
-| GPIO27    | USB Power Detect             | Voltage Divider from 5V USB  | Allows firmware to detect primary power loss  |
+| ESP32 GPIO | Function                   | Connected To                | Notes                                     |
+| ---------- | -------------------------- | --------------------------- | ----------------------------------------- |
+| GPIO14     | Valve 1 Input 1            | DRV8871 #1 - PH             | H-Bridge Input 1 for Valve 1              |
+| GPIO12     | Valve 1 Input 2            | DRV8871 #1 - EN             | H-Bridge Input 2 for Valve 1              |
+| GPIO16     | Valve 2 Input 1            | DRV8871 #2 - PH             | H-Bridge Input 1 for Valve 2              |
+| GPIO17     | Valve 2 Input 2            | DRV8871 #2 - EN             | H-Bridge Input 2 for Valve 2              |
+| GPIO25     | Valve 3 Input 1            | DRV8871 #3 - PH             | H-Bridge Input 1 for Valve 3              |
+| GPIO26     | Valve 3 Input 2            | DRV8871 #3 - EN             | H-Bridge Input 2 for Valve 3              |
+| GPIO32     | 12V Boost Converter Enable | Boost Converter EN Pin      | Activates the 12V supply for valves       |
+| GPIO13     | Water Flow Sensor Pulse    | YF-S201 Signal Pin          | Utilizes ESP32 Pulse Counter              |
+| GPIO15     | Temp Sensor (1-Wire)       | DS18B20 Data Pin            | Requires a 4.7kΩ pull-up resistor to 3.3V |
+| GPIO2      | Status LED                 | On-board LED                | For visual feedback                       |
+| GPIO36     | 9V Battery Voltage Sense   | Voltage Divider from 9V Bat | For backup battery level monitoring       |
+| GPIO39     | DHT22 sensor               | DHT22 Data pin              | Temperature and Humidity sensor           |
+| GPIO27     | Enable 12V                 | 12V Boost Converter         | Enable 12V for H-Bridge drivers           |
 
 ## 5. Power Consumption Analysis
 

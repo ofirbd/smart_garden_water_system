@@ -50,10 +50,12 @@ void setup_wifi() {
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("Program started");
+  
   ledControl.begin(); // Initialize LED control
 
   valveController.begin();
-  setup_wifi(); // This will block and blink until connected
+  setup_wifi(); // This will block and blink until mqtt is connected
   timeManager.begin();
   
   // Initialize the scheduler

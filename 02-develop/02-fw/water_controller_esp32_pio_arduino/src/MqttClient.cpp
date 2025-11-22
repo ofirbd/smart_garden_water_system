@@ -25,7 +25,7 @@ MqttClient::MqttClient(Scheduler* scheduler, ValveController* valveController)
 }
 
 void MqttClient::begin() {
-    _client.setBufferSize(512);
+    _client.setBufferSize(512); // was 512
     _client.setServer(MQTT_BROKER_IP, MQTT_PORT);
     _client.setCallback(MqttClient::staticCallback);
 }
