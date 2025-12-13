@@ -57,6 +57,9 @@ The system consists of the following main components:
 *   The **Mobile Application** communicates with the **Central Control Unit (Raspberry Pi)**. This communication can be via MQTT directly or, more commonly, through an API/Web Server on the Raspberry Pi that then interacts with the MQTT Broker. This setup prevents exposing MQTT credentials directly to the mobile app and allows for more complex data processing and presentation.
 *   The user primarily interacts with the **Mobile Application** to manage and monitor the entire system.
 
+**Current System Limitation & Future Plans for Multi-Unit Support:**
+The current system, including the backend and frontends, is designed to primarily support and interact with a single active Smart Water Unit (ESP32) at a time. This is due to the current MQTT topic structure and how client IDs are handled across the system. Enabling true multi-unit support, where multiple Smart Water Units can operate simultaneously and be managed by the same backend and frontends, is a future development plan. This becomes particularly relevant and necessary if a common MQTT broker is utilized by all boards, requiring distinct identification and data handling for each unit.
+
 ## 3. Hardware Detailed Design
 
 ### 3.1. Microcontroller

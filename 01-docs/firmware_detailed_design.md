@@ -8,7 +8,9 @@ This document outlines the detailed design for the firmware of the ESP32-based S
 
 -   **IDE:** Visual Studio Code with PlatformIO
 -   **Framework:** Arduino
--   **Target Boards:** ESP32-FireBeetle or DOIT ESP32 DEVKIT V1
+-   **Target Boards:**
+    -   **Production:** ESP32-WROOM-32D/E (PlatformIO Board ID: `esp32dev`)
+    -   **Development:** FireBeetle ESP32 (PlatformIO Board ID: `firebeetle32`)
 
 ## 3. Core Libraries
 
@@ -128,3 +130,51 @@ The firmware will be composed of several distinct modules (classes) to ensure mo
 -   The watering schedule received via MQTT will be stored in the ESP32's non-volatile storage (NVS) or in a JSON file on the SPIFFS filesystem.
 -   This ensures that the schedule is not lost if the device reboots or loses power.
 -   The `Scheduler` module will be responsible for all read/write operations to persistent storage.
+
+## 8. Build Configurations and Future Development
+
+This section describes the process for compiling the firmware for different environments and outlines the plan for future multi-controller support.
+
+### 8.1. Development vs. Production Builds
+
+To allow for parallel development and testing without interfering with the main, operational system, the firmware can be compiled in two modes: **Production** and **Development**. This is controlled by a macro in `Config.h`.
+
+The key differences are the `MQTT_CLIENT_ID` and the MQTT topic prefixes, which are isolated from each other.
+
+-   **Production Mode:** Uses the client ID `esp32-garden-controller` and publishes to `smart-garden/...` topics. This is the version that interacts with the live backend and frontend applications.
+-   **Development Mode:** Uses the client ID `esp32-garden-controller-dev` and publishes to `smart-garden-dev/...` topics. This allows it to connect to the MQTT broker without disconnecting the main board.
+
+#### How to Switch Modes
+
+1.  Open the file `02-develop/02-fw/water_controller_esp32_pio_arduino/include/Config.h`.
+2.  To compile for the **Development Board**, ensure the following line is active:
+    ```c++
+    #define DEV_BOARD
+    ```
+3.  To compile for the **Production Board**, comment out that line:
+    ```c++
+    // #define DEV_BOARD
+    ```
+4.  Open the file `02-develop/02-fw/water_controller_esp32_pio_arduino/platformio.ini`.
+5.  Update the `default_envs` setting to match your target board:
+    -   For the **Development Board**: `default_envs = firebeetle32`
+    -   For the **Production Board**: `default_envs = esp32dev`
+
+### 8.2. Monitoring the Development Board
+
+Since the Development build uses separate MQTT topics, it will not appear in the official web or mobile applications. You can monitor its activity using a generic MQTT client or the provided test script.
+
+To use the test script:
+1.  Open the file `03-testing/test_mqtt/mqtt_garden_monitor.py`.
+2.  Set the flag `MONITOR_DEV_BOARD = True`.
+3.  Run the script. It will subscribe to the `smart-garden-dev/#` topics and print all messages from your development board.
+
+### 8.3. Future Plan: True Multi-Controller Support
+
+The current `DEV_BOARD` flag is a temporary solution for parallel development. A future goal is to upgrade the entire system to natively support multiple smart water units operating simultaneously as part of a single, unified system.
+
+This will require significant architectural changes:
+
+1.  **Firmware:** The firmware will need to be updated to use a truly unique identifier (e.g., derived from the MAC address) for its MQTT client ID and topic structure, removing the need for compile-time flags.
+2.  **Backend:** The backend server will need to be refactored to handle data from an arbitrary number of devices. This includes subscribing to wildcard topics (e.g., `smart-garden/unit/+/status`) and storing and processing all data on a per-device basis.
+3.  **Frontend (Web & Mobile):** The user interfaces will need to be redesigned to support multiple devices. This would likely involve adding a device management screen where users can add, remove, and select which device they want to view and control.

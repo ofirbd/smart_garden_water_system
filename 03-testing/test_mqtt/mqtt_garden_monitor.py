@@ -1,6 +1,10 @@
 import paho.mqtt.client as mqtt # Import the MQTT client library from paho-mqtt
 import time # Import the time module (though not extensively used in this receiver-only script)
 
+# --- Monitoring Configuration ---
+MONITOR_DEV_BOARD = True # Set to True to monitor the development board, False for the production board
+#---------------------------------
+
 # --- MQTT Broker Configuration ---
 # You can uncomment and switch between brokers as needed during development.
 # mqtt_broker="192.168.1.204" # FreeNAS broker
@@ -16,9 +20,24 @@ mqtt_keepalive = 60 # Maximum period in seconds between communications with the 
 # mqtt_password = 'ofiriot'
 
 # --- Topics to Subscribe To ---
+# Define production topics
+mqtt_topic_smart_garden_prod = 'smart-garden/#'
+mqtt_topic_test_prod = 'test_topic'
+
+# Define development topics
+mqtt_topic_smart_garden_dev = 'smart-garden-dev/#'
+mqtt_topic_test_dev = 'test_topic_dev'
+
+if MONITOR_DEV_BOARD:
+    mqtt_topic_smart_garden = mqtt_topic_smart_garden_dev
+    mqtt_topic_test = mqtt_topic_test_dev
+    print("Monitoring Development Board Topics")
+else:
+    mqtt_topic_smart_garden = mqtt_topic_smart_garden_prod
+    mqtt_topic_test = mqtt_topic_test_prod
+    print("Monitoring Production Board Topics")
+
 # Using wildcards for broader subscription, which is efficient for receiving related messages.
-mqtt_topic_smart_garden = 'smart-garden/#' # Wildcard for all topics under 'smart-garden/'
-mqtt_topic_test = 'test_topic'           # Specific topic for testing
 
 # --- Callback Functions ---
 # These functions are called by the paho-mqtt client library in response to MQTT events.
