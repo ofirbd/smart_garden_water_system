@@ -12,7 +12,7 @@
 //      BOARD CONFIGURATION
 // =================================================================
 // Comment out the following line to compile for the production board
-#define DEV_BOARD
+//#define DEV_BOARD
 
 #ifdef DEV_BOARD
     // --- DEVELOPMENT BOARD CONFIGURATION ---

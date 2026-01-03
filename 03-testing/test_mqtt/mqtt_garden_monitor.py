@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt # Import the MQTT client library from paho-mqtt
 import time # Import the time module (though not extensively used in this receiver-only script)
 
 # --- Monitoring Configuration ---
-MONITOR_DEV_BOARD = True # Set to True to monitor the development board, False for the production board
+MONITOR_DEV_BOARD = False # Set to True to monitor the development board, False for the production board
 #---------------------------------
 
 # --- MQTT Broker Configuration ---

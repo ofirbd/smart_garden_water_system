@@ -109,8 +109,8 @@ app.post('/api/command', (req, res) => {
     }
 });
 
-    // Serve the Flutter web app
-const buildPath = path.join(__dirname, '..', '..', 'mobile_web_app', 'build', 'web');
+// Serve the Flutter web app from a 'public' subfolder
+const buildPath = path.join(__dirname, 'public');
 app.use(express.static(buildPath));
 
 // Catch-all route to serve index.html for single-page application
