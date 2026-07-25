@@ -1,7 +1,7 @@
 # Smart Garden Water System: Hardware Problem Analysis & Protection Solutions
 
 > [!IMPORTANT]
-> **Executive Summary**: This document provides a comprehensive technical analysis of the hardware failure experienced on ESP32 Board #1, explains the root causes (GPIO 12 strapping pin vulnerability and inductive back-EMF spikes from 12V solenoid valves), and outlines actionable solutions—ranging from immediate breadboard patches to an updated PCB schematic redesign (Rev 8).
+> **Executive Summary**: This document provides a comprehensive technical analysis of the hardware failure experienced on ESP32 Board #1, explains the root causes (GPIO 12 strapping pin vulnerability and inductive back-EMF spikes from 12V solenoid valves), and outlines actionable solutions—ranging from immediate breadboard/PCB wire patches to an updated PCB schematic redesign (Rev 8).
 
 ---
 
@@ -56,21 +56,34 @@ An in-depth review of the KiCad schematics (`Valves Interface Controls` and `ESP
 
 ## 3. Solution Options
 
-To prevent damaging the new ESP32 board while continuing project progress, three solution options are available:
+To prevent damaging the new ESP32 board while continuing project progress, four solution options are available:
 
-### Option A: Quick Wire Patch (Immediate Protection for Current PCB)
-If you wish to test physical valves safely on the existing PCB without manufacturing a new board:
+### Option A: Trace Cut & Wire Jumper Mod (Pin Remap Patch)
+If you want to use physical valves on the existing PCB without manufacturing a new board:
 
 > [!TIP]
 > **Action Steps**:
-> 1. **Solder Flyback Diodes Across Solenoid Terminals**:
->    - Place a **TVS Diode** (e.g., `SMAJ15A` / `1.5KE15A` bidirectional) or a **Schottky Diode** (e.g., `1N5819` / `1N4007`) directly across the screw terminals `J4`, `J5`, and `J6` for each valve.
-> 2. **Add Inline Series Resistors**:
->    - Cut the `valve12` trace or insert a **1kΩ resistor** in series between GPIO 12 and DRV8871 `IN2`. Add 1kΩ resistors to all logic inputs (`valve11`..`valve32`).
+> 1. **Cut the GPIO 12 PCB Trace**: Cut the copper trace leading away from **GPIO 12** (`valve12`).
+> 2. **Jumper to a Spare GPIO Pin**: Solder a jumper wire from DRV8871 `U7 IN2` to a free, non-strapping GPIO pin on the ESP32 (such as **GPIO 18**, **GPIO 19**, or **GPIO 23**).
+> 3. **Update Firmware Pin Mapping**: Update `Config.h`:
+>    ```cpp
+>    #define VALVE1_PIN_B 18  // Remapped from GPIO 12 to GPIO 18
+>    ```
+> 4. **Add Flyback Diodes**: Solder flyback/TVS diodes (e.g., `1N4007` / `SMAJ15A`) across output terminals `J4`, `J5`, `J6`.
 
 ---
 
-### Option B: Safe "Dry Run" Testing (No Physical Valves Connected)
+### Option B: Quick Inline Wire & Resistor Patch
+If you prefer to keep GPIO 12 connected:
+
+> [!TIP]
+> **Action Steps**:
+> 1. **Add 1kΩ Series Resistor**: Insert a **1kΩ resistor** in series on the `valve12` signal line to limit peak current into GPIO 12.
+> 2. **Solder Flyback Diodes**: Solder **TVS Diodes** (`SMAJ15A`) or **Schottky Diodes** (`1N5819`) across screw terminals `J4`, `J5`, `J6`.
+
+---
+
+### Option C: Safe "Dry Run" Testing (No Physical Valves Connected)
 If you prefer not to connect physical 12V valves until a protected board is ready, you can perform full system verification safely:
 
 > [!NOTE]
@@ -81,7 +94,7 @@ If you prefer not to connect physical 12V valves until a protected board is read
 
 ---
 
-### Option C: Hardware Rev 8 Schematic Redesign (Permanent Fix)
+### Option D: Hardware Rev 8 Schematic Redesign (Permanent Fix)
 For the next PCB manufacturing run, update the KiCad schematics as follows:
 
 ```
@@ -112,7 +125,8 @@ For the next PCB manufacturing run, update the KiCad schematics as follows:
 
 | Option | Hardware Risk | Effort Required | Allows Valve Testing? | Recommended Use Case |
 | :--- | :--- | :--- | :--- | :--- |
-| **Option A (Wire Patch)** | Low | Solder external diodes & 1kΩ resistors | Yes | Testing solenoids on current PCB |
-| **Option B (Dry Run)** | Zero | None | No (App / Logic only) | Testing UI, MQTT, Scheduler, & Sensors |
-| **Option C (Rev 8 PCB)** | Zero | KiCad update & PCB manufacturing | Yes (Future) | Long-term production deployment |
+| **Option A (Trace Cut & Jumper)** | Very Low | Cut PCB trace, solder wire to GPIO 18 & update code | Yes | Fastest safe mod on current PCB |
+| **Option B (Inline Resistor)** | Low | Insert 1kΩ resistor & solder diodes | Yes | Keeping GPIO 12 with current limiting |
+| **Option C (Dry Run)** | Zero | None | No (App / Logic only) | Testing UI, MQTT, Scheduler, & Sensors |
+| **Option D (Rev 8 PCB)** | Zero | KiCad update & PCB manufacturing | Yes (Future) | Long-term production deployment |
 
