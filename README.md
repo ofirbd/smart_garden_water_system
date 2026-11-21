@@ -169,21 +169,11 @@ Follow these steps to get your Smart Garden Water System up and running:
     * Create and manage custom watering schedules for your garden zones.
     * Check the battery status and overall health of your ESP32 unit.
 
-## Contributing
-
-Contributions to the Smart Garden Water System are highly welcome! Whether you're interested in bug fixes, feature enhancements, or documentation improvements, please feel free to:
-
-* **Open an issue:** To report bugs, suggest new features, or ask questions.
-* **Submit a pull request:** To contribute code changes.
-
-Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) (if you create one) for detailed guidelines on how to contribute.
-
 ## License
 
 This project is open-source and distributed under the [MIT License](LICENSE). See the `LICENSE` file for more details.
 
 ---
 
-**[Your Name / GitHub Username]**
-**[Date of creation or last significant update - e.g., June 2025]**
+
 
