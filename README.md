@@ -89,7 +89,7 @@ The primary user interface for controlling and monitoring the garden from anywhe
 
 ## Detailed System Description and Requirements
 
-For an in-depth understanding of the system's complete architecture, detailed hardware and software requirements for each component, precise communication protocols, and in-depth design considerations, please refer to the dedicated **[SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md)** document. This comprehensive document also outlines potential future enhancements and specific implementation details.
+For an in-depth understanding of the system's complete architecture, detailed hardware and software requirements for each component, precise communication protocols, and in-depth design considerations, please refer to the dedicated **[SYSTEM_REQUIREMENTS.md](./01-docs/SYSTEM_REQUIREMENTS.md)** document. This comprehensive document also outlines potential future enhancements and specific implementation details.
 
 ## Setup & Installation
 
@@ -101,6 +101,7 @@ Follow these steps to get your Smart Garden Water System up and running:
     * Download and flash the latest Raspberry Pi OS (Lite or Desktop, depending on your preference) onto a microSD card using [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
     * Enable SSH for remote access.
 2.  **Install Mosquitto MQTT Broker:**
+    
     ```bash
     sudo apt update
     sudo apt install mosquitto mosquitto-clients
@@ -171,7 +172,7 @@ Follow these steps to get your Smart Garden Water System up and running:
 
 ## License
 
-This project is open-source and distributed under the [MIT License](LICENSE). See the `LICENSE` file for more details.
+This project is open-source and distributed under the MIT License. See the `LICENSE` file for more details.
 
 ---
 
