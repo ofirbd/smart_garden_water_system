@@ -89,7 +89,7 @@ The primary user interface for controlling and monitoring the garden from anywhe
 
 ## Detailed System Description and Requirements
 
-For an in-depth understanding of the system's complete architecture, detailed hardware and software requirements for each component, precise communication protocols, and in-depth design considerations, please refer to the dedicated **[SYSTEM_REQUIREMENTS.md](./01-docs/SYSTEM_REQUIREMENTS.md)** document. This comprehensive document also outlines potential future enhancements and specific implementation details.
+For an in-depth understanding of the system's complete architecture, detailed hardware and software requirements for each component, precise communication protocols, and in-depth design considerations, please refer to the dedicated **[system_requirements.md](./01-docs/system_requirements.md)** and  **[system_detailed_design.md](./01-docs/system_detailed_design.md)** documents. These comprehensive documents also outlines potential future enhancements and specific implementation details.
 
 ## Setup & Installation
 
